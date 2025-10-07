@@ -7,8 +7,8 @@ const Footer = () => {
   const date = new Date().getFullYear();
 
   return (
-    <footer className="py-8 container mx-auto max-w-7xl bg-gray-200">
-      <div className="grid md:grid-cols-3 gap-8 mb-8 px-4">
+    <footer className="py-8 mx-auto w-full bg-gray-200">
+      <div className="grid md:grid-cols-2 gap-8 mb-8 px-2 lg:px-36">
         {/* Contact Info */}
         <div className="text-[0.88rem] space-y-3">
           <h3 className="text-sm font-semibold">Contact Us</h3>

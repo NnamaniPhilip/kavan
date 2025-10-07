@@ -233,7 +233,7 @@ const CartDrawer = () => {
                     </div>
                     <Link
                       href="/"
-                      className="w-full bg-black text-white py-3 px-6 rounded-lg font-medium text-center block hover:bg-gray-800 transition-colors"
+                      className="w-full bg-black text-white py-3 px-6 rounded-xl font-medium text-center block hover:bg-gray-800 transition-colors"
                       onClick={closeCart}
                     >
                       Sign In to Checkout
@@ -246,12 +246,13 @@ const CartDrawer = () => {
                   />
                 )}
 
-                <button
+                <Link
+                  href="/shop"
                   onClick={closeCart}
-                  className="w-full border border-gray-300 text-gray-700 py-3 px-6 rounded-xl font-bold hover:bg-gray-50 transition-colors"
+                  className="w-full block border border-gray-300 text-gray-700 py-3 px-6 rounded-xl text-center font-bold hover:bg-gray-50 transition-colors"
                 >
                   Continue Shopping
-                </button>
+                </Link>
               </div>
             </div>
           )}

@@ -3,6 +3,7 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image";
+import { urlFor } from "@/sanity/lib/image";
 
 const ProductModal = ({ product, onClose, onAddToCart }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -14,7 +15,28 @@ const ProductModal = ({ product, onClose, onAddToCart }) => {
     setCurrentImageIndex(index);
   };
 
-  const mainImage = product.images[currentImageIndex];
+  // Handle both processedImages and original image arrays
+  const getImages = () => {
+    if (product.processedImages) {
+      return product.processedImages;
+    }
+    if (product.images) {
+      return product.images;
+    }
+    if (product.image) {
+      return product.image.map((img) =>
+        typeof img === "string" ? img : urlFor(img).width(600).height(800).url()
+      );
+    }
+    return [];
+  };
+
+  const images = getImages();
+  const mainImage = images[currentImageIndex];
+
+  const handleAddToCartClick = () => {
+    onAddToCart(product);
+  };
 
   return (
     <div
@@ -51,35 +73,37 @@ const ProductModal = ({ product, onClose, onAddToCart }) => {
             {/* Image Gallery Section */}
             <div className="relative bg-gray-50">
               <div className="relative aspect-[3/4] w-full h-full">
-                <Image
-                  ref={modalImageRef}
-                  src={mainImage}
-                  alt={product.name}
-                  fill
-                  className="object-cover"
-                  priority
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  onLoad={() => {
-                    if (modalImageRef.current) {
-                      modalImageRef.current.style.opacity = "1";
-                    }
-                  }}
-                  style={{ transition: "opacity 0.2s ease-in-out" }}
-                />
+                {mainImage && (
+                  <Image
+                    ref={modalImageRef}
+                    src={mainImage}
+                    alt={product.name}
+                    fill
+                    className="object-cover"
+                    priority
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    onLoad={() => {
+                      if (modalImageRef.current) {
+                        modalImageRef.current.style.opacity = "1";
+                      }
+                    }}
+                    style={{ transition: "opacity 0.2s ease-in-out" }}
+                  />
+                )}
 
                 {/* Image Counter */}
-                {product.images.length > 1 && (
+                {images.length > 1 && (
                   <div className="absolute top-2 left-2 bg-black/70 text-white px-3 py-1 rounded-full text-sm font-medium">
-                    {currentImageIndex + 1} / {product.images.length}
+                    {currentImageIndex + 1} / {images.length}
                   </div>
                 )}
               </div>
 
               {/* Thumbnail Gallery */}
-              {product.images.length > 1 && (
+              {images.length > 1 && (
                 <div className="absolute bottom-2 left-2">
                   <div className="flex gap-2 justify-center overflow-x-auto">
-                    {product.images.map((img, index) => (
+                    {images.map((img, index) => (
                       <button
                         key={index}
                         onClick={() => handleThumbnailClick(index)}
@@ -104,14 +128,14 @@ const ProductModal = ({ product, onClose, onAddToCart }) => {
             </div>
 
             {/* Product Details Section */}
-            <div className="flex flex-col justify-between p-2 mt-6">
+            <div className="flex flex-col justify-between p-6">
               <div className="space-y-6">
                 <div>
                   <h2 className="text-2xl md:text-3xl font-light mb-3 text-gray-900">
                     {product.name}
                   </h2>
                   <p className="text-2xl font-bold text-gray-900 mb-4">
-                    ₦{product.price.toLocaleString()}
+                    ₦{product.price?.toLocaleString()}
                   </p>
                 </div>
 
@@ -128,7 +152,7 @@ const ProductModal = ({ product, onClose, onAddToCart }) => {
               <div className="space-y-4 pt-6">
                 <button
                   className="w-full bg-black text-white py-3 px-6 hover:bg-gray-800 transition-all duration-300 rounded-xl font-semibold text-lg shadow-lg"
-                  onClick={() => onAddToCart(product)}
+                  onClick={handleAddToCartClick}
                 >
                   Add to Cart
                 </button>
